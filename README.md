@@ -11,7 +11,7 @@ A comprehensive flight analytics and route recommendation system built for the *
 
 ### Live Demo
 
-✈️ **[View Live Demo](https://routeradar-1.preview.emergentagent.com)** ✈️
+✈️ **[View Live Demo](please follow all commands to get live url)** ✈️
 
 ### Key Features
 
@@ -494,4 +494,4 @@ Built for **MariaDB Hackathon 2025**
 
 **Made with ❤️ and lots of ☕ by your name**
 
-🚀 **[View Live Demo](https://routeradar-1.preview.emergentagent.com)** 🚀
+🚀 **[View Live Demo](run localhost)** 🚀
