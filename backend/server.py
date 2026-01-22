@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, Query, HTTPException
+from fastapi import FastAPI, APIRouter, Query
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,7 +6,6 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel
-from typing import Optional
 
 # ---------- ENV ----------
 ROOT_DIR = Path(__file__).parent
@@ -33,10 +32,7 @@ app.add_middleware(
 )
 
 # ---------- MONGO ----------
-client = AsyncIOMotorClient(
-    MONGO_URL,
-    serverSelectionTimeoutMS=5000
-)
+client = AsyncIOMotorClient(MONGO_URL, serverSelectionTimeoutMS=5000)
 db = client[DB_NAME]
 
 # ---------- ROUTER ----------
@@ -68,23 +64,14 @@ async def get_stats():
         total_countries=len(countries),
     )
 
-# ---------- BUSIEST AIRPORTS ----------
+# ---------- BUSIEST AIRPORTS (FIXED) ----------
 @api_router.get("/analytics/busiest-airports")
 async def busiest_airports(limit: int = 10):
     pipeline = [
-        {"$group": {"_id": "$dest_id", "count": {"$sum": 1}}},
+        {"$group": {"_id": "$dest", "count": {"$sum": 1}}},
         {"$sort": {"count": -1}},
         {"$limit": limit},
-        {
-            "$lookup": {
-                "from": "airports",
-                "localField": "_id",
-                "foreignField": "id",
-                "as": "airport",
-            }
-        },
-        {"$unwind": "$airport"},
-        {"$project": {"_id": 0, "airport": "$airport.name", "count": 1}},
+        {"$project": {"_id": 0, "airport": "$_id", "routes": "$count"}},
     ]
     return await db.routes.aggregate(pipeline).to_list(length=limit)
 
@@ -99,12 +86,12 @@ async def search_airports(q: str, limit: int = 10):
 
     return await cursor.to_list(length=limit)
 
-# ---------- ROUTES FOR AIRPORT ----------
-@api_router.get("/search/routes/{airport_id}")
-async def routes_for_airport(airport_id: int, limit: int = 20):
+# ---------- ROUTES FOR AIRPORT (FIXED) ----------
+@api_router.get("/search/routes/{iata}")
+async def routes_for_airport(iata: str, limit: int = 20):
     cursor = db.routes.find(
-        {"$or": [{"source_id": airport_id}, {"dest_id": airport_id}]},
-        {"_id": 0},
+        {"$or": [{"source": iata.upper()}, {"dest": iata.upper()}]},
+        {"_id": 0, "embedding": 0},
     ).limit(limit)
 
     return await cursor.to_list(length=limit)
@@ -116,11 +103,8 @@ async def direct_routes(
     destination: str = Query(...)
 ):
     return await db.routes.find(
-        {
-            "source": source.upper(),
-            "dest": destination.upper(),
-        },
-        {"_id": 0},
+        {"source": source.upper(), "dest": destination.upper()},
+        {"_id": 0, "embedding": 0},
     ).to_list(length=50)
 
 # ---------- INCLUDE ROUTER ----------
