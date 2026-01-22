@@ -8,8 +8,6 @@ import os
 import logging
 import numpy as np
 import pickle
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import TfidfVectorizer
 
 # ---------- ENV ----------
 ROOT_DIR = Path(__file__).parent
@@ -52,6 +50,13 @@ class Stats(BaseModel):
     total_airlines: int
     total_routes: int
     total_countries: int
+
+# ---------- UTILS ----------
+def cosine_sim(a: np.ndarray, b: np.ndarray) -> float:
+    denom = (np.linalg.norm(a) * np.linalg.norm(b))
+    if denom == 0:
+        return 0.0
+    return float(np.dot(a, b) / denom)
 
 # ---------- ANALYTICS ----------
 @api_router.get("/analytics/stats", response_model=Stats)
@@ -102,7 +107,7 @@ async def direct_routes(
         {"_id": 0, "embedding": 0},
     ).to_list(length=50)
 
-# ---------- SIMILAR ROUTES (AI) ----------
+# ---------- SIMILAR ROUTES (RENDER-SAFE AI) ----------
 @api_router.get("/recommendations/similar-routes")
 async def similar_routes(
     source: str = Query(...),
@@ -111,6 +116,7 @@ async def similar_routes(
 ):
     route_text = f"{source.upper()}-{destination.upper()}"
 
+    # Fetch all routes with embeddings
     docs = await db.routes.find(
         {"embedding": {"$exists": True}},
         {"_id": 0}
@@ -119,47 +125,45 @@ async def similar_routes(
     if not docs:
         raise HTTPException(status_code=404, detail="No routes with embeddings")
 
+    # Find query route embedding
+    query_embedding = None
     embeddings = []
     meta = []
 
     for d in docs:
-        try:
-            emb = d["embedding"]
-            if isinstance(emb, (bytes, bytearray)):
-                emb = pickle.loads(emb)
+        emb = d["embedding"]
+        if isinstance(emb, (bytes, bytearray)):
+            emb = pickle.loads(emb)
+        emb = np.array(emb)
 
-            embeddings.append(emb)
-            meta.append({
-                "source": d["source"],
-                "dest": d["dest"],
-                "airline": d.get("airline"),
-                "route_text": d.get("route_text"),
-            })
-        except:
-            continue
+        embeddings.append(emb)
+        meta.append({
+            "source": d["source"],
+            "dest": d["dest"],
+            "airline": d.get("airline"),
+            "route_text": d.get("route_text"),
+        })
 
-    if not embeddings:
-        raise HTTPException(status_code=404, detail="No valid embeddings")
+        if d.get("route_text") == route_text:
+            query_embedding = emb
 
-    embeddings = np.array(embeddings)
+    if query_embedding is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Base route not found in dataset"
+        )
 
-    texts = [m["route_text"] for m in meta]
-    vectorizer = TfidfVectorizer(
-        analyzer="char_wb",
-        ngram_range=(2, 5),
-        max_features=128,
-    )
-    vectorizer.fit(texts)
+    # Compute similarity
+    scores = [
+        cosine_sim(query_embedding, e) for e in embeddings
+    ]
 
-    query_vec = vectorizer.transform([route_text]).toarray()
-    scores = cosine_similarity(query_vec, embeddings)[0]
-
-    top_idx = scores.argsort()[-top_k:][::-1]
+    top_idx = np.argsort(scores)[-top_k:][::-1]
 
     return [
         {
             **meta[i],
-            "similarity": float(scores[i])
+            "similarity": scores[i]
         }
         for i in top_idx
     ]
