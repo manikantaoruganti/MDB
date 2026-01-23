@@ -8,12 +8,9 @@ from pathlib import Path
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import pickle
-<<<<<<< HEAD
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
-=======
->>>>>>> 35dd3360f97ccb664fffbeed550afe5107407367
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -207,9 +204,7 @@ async def get_routes_by_airport(airport_id: int, limit: int = Query(50, ge=1, le
     routes = await db.routes.find(query, {"_id": 0, "embedding": 0}).limit(limit).to_list(length=limit)
     return routes
 
-<<<<<<< HEAD
 # Recommendations Endpoint
-=======
 # ---------- DIRECT ROUTES ----------
 @api_router.get("/recommendations/direct-routes")
 async def direct_routes(
@@ -222,7 +217,6 @@ async def direct_routes(
     ).to_list(length=50)
 
 # ---------- SIMILAR ROUTES (RENDER-SAFE AI) ----------
->>>>>>> 35dd3360f97ccb664fffbeed550afe5107407367
 @api_router.get("/recommendations/similar-routes")
 async def get_similar_routes(
     source: str = Query(..., description="Source airport IATA code"),
@@ -231,7 +225,6 @@ async def get_similar_routes(
 ):
     """Get similar route recommendations using vector similarity"""
     route_text = f"{source.upper()}-{destination.upper()}"
-<<<<<<< HEAD
     
     # Fetch all routes with embeddings
     all_routes = await db.routes.find({"embedding": {"$exists": True}}, {"_id": 0}).to_list(length=None)
@@ -316,7 +309,6 @@ async def root():
     return {"message": "Flight Analytics API - Ready", "version": "1.0.0"}
 
 # Include router
-=======
 
     # Fetch all routes with embeddings
     docs = await db.routes.find(
@@ -371,7 +363,6 @@ async def root():
     ]
 
 # ---------- INCLUDE ROUTER ----------
->>>>>>> 35dd3360f97ccb664fffbeed550afe5107407367
 app.include_router(api_router)
 
 # CORS
