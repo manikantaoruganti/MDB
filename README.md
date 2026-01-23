@@ -1,5 +1,6 @@
 # Flight Analytics & Recommendation System
 
+[![Made with Emergent](https://img.shields.io/badge/Made%20with-Emergent-blue)](https://emergent.sh)
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB-green)](https://www.mongodb.com/)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-teal)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/Frontend-React-blue)](https://reactjs.org/)
@@ -10,7 +11,7 @@ A comprehensive flight analytics and route recommendation system built for the *
 
 ### Live Demo
 
-✈️ **[View Live Demo](please follow all commands to get live url)** ✈️
+✈️ **[View Live Demo]* ✈️
 
 ### Key Features
 
@@ -493,4 +494,4 @@ Built for **MariaDB Hackathon 2025**
 
 **Made with ❤️ and lots of ☕ by your name**
 
-🚀 **[View Live Demo](run localhost)** 🚀
+🚀 **[View Live Demo]🚀
