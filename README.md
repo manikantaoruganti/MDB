@@ -325,9 +325,9 @@ pipeline = [
 
 ### Deploy to Emergent (Recommended)
 
-This project is already deployed on Emergent:
+This project is already deployed on netlify
 
-🚀 **[Live Demo](https://routeradar-1.preview.emergentagent.com)** 🚀
+🚀 **[Live Demo](https://polite-blini-65f8c4.netlify.app/)** 🚀
 
 ### Deploy to Other Platforms
 
