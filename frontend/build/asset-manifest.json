@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/MDB2UPDATED/static/css/main.e21e6685.css",
-    "main.js": "/MDB2UPDATED/static/js/main.474dfe67.js",
-    "index.html": "/MDB2UPDATED/index.html",
-    "main.e21e6685.css.map": "/MDB2UPDATED/static/css/main.e21e6685.css.map",
-    "main.474dfe67.js.map": "/MDB2UPDATED/static/js/main.474dfe67.js.map"
+    "main.css": "/static/css/main.e21e6685.css",
+    "main.js": "/static/js/main.474dfe67.js",
+    "index.html": "/index.html",
+    "main.e21e6685.css.map": "/static/css/main.e21e6685.css.map",
+    "main.474dfe67.js.map": "/static/js/main.474dfe67.js.map"
   },
   "entrypoints": [
     "static/css/main.e21e6685.css",
