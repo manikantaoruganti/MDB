@@ -1,6 +1,6 @@
 # Flight Analytics & Recommendation System
 
-[![Made with Emergent](https://img.shields.io/badge/Made%20with-Emergent-blue)](https://emergent.sh)
+
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB-green)](https://www.mongodb.com/)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-teal)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/Frontend-React-blue)](https://reactjs.org/)
@@ -484,7 +484,7 @@ MIT License - feel free to use this project for learning or hackathons!
 - **FastAPI** - For the excellent Python web framework
 - **React & Tailwind CSS** - For the modern frontend stack
 - **shadcn/ui** - For beautiful UI components
-- **Emergent** - For the deployment platform
+- **railway** - For the deployment platform
 
 ## Contact
 
