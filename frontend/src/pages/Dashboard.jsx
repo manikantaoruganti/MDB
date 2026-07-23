@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Plane, TrendingUp, Map, Globe } from 'lucide-react';
+import StatWidget from '@/components/shared/StatWidget';
+import GlassCard from '@/components/shared/GlassCard';
+import LoadingSkeleton from '@/components/shared/LoadingSkeleton';
+import PageHeader from '@/components/shared/PageHeader';
+import { BarChart3 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -26,155 +31,117 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16 fade-in">
-          <div className="flex items-center justify-center mb-6">
-            <Plane className="w-16 h-16 text-blue-400 mr-4" />
-            <h1 className="text-6xl font-bold gradient-text">
-              Flight Analytics
-            </h1>
-          </div>
-          <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-            Discover flight routes, analyze aviation data, and get AI-powered
-            recommendations using vector similarity search
-          </p>
+    <div>
+      <PageHeader
+        title="Dashboard"
+        subtitle="Flight analytics overview and quick navigation"
+        icon={BarChart3}
+      />
+
+      {/* Stats Grid */}
+      {loading ? (
+        <LoadingSkeleton type="cards" />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 stagger-children">
+          <StatWidget
+            icon={<Map className="w-6 h-6" />}
+            title="Airports"
+            value={stats?.total_airports || 0}
+            color="blue"
+            delay={0}
+          />
+          <StatWidget
+            icon={<Plane className="w-6 h-6" />}
+            title="Airlines"
+            value={stats?.total_airlines || 0}
+            color="violet"
+            delay={100}
+          />
+          <StatWidget
+            icon={<TrendingUp className="w-6 h-6" />}
+            title="Routes"
+            value={stats?.total_routes || 0}
+            color="cyan"
+            delay={200}
+          />
+          <StatWidget
+            icon={<Globe className="w-6 h-6" />}
+            title="Countries"
+            value={stats?.total_countries || 0}
+            color="emerald"
+            delay={300}
+          />
         </div>
+      )}
 
-        {/* Stats Grid */}
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="loading-spinner" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 fade-in">
-            <StatCard
-              icon={<Map className="w-8 h-8" />}
-              title="Airports"
-              value={stats?.total_airports?.toLocaleString() || '0'}
-              color="blue"
-              testId="stat-airports"
-            />
-            <StatCard
-              icon={<Plane className="w-8 h-8" />}
-              title="Airlines"
-              value={stats?.total_airlines?.toLocaleString() || '0'}
-              color="purple"
-              testId="stat-airlines"
-            />
-            <StatCard
-              icon={<TrendingUp className="w-8 h-8" />}
-              title="Routes"
-              value={stats?.total_routes?.toLocaleString() || '0'}
-              color="pink"
-              testId="stat-routes"
-            />
-            <StatCard
-              icon={<Globe className="w-8 h-8" />}
-              title="Countries"
-              value={stats?.total_countries?.toLocaleString() || '0'}
-              color="cyan"
-              testId="stat-countries"
-            />
-          </div>
-        )}
-
-        {/* Action Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 fade-in">
-          <Link to="/analytics">
-            <div
-              className="glass rounded-3xl p-8 cursor-pointer"
-              data-testid="analytics-card"
-            >
-              <TrendingUp className="w-12 h-12 text-blue-400 mb-4" />
-              <h2 className="text-2xl font-bold mb-3">Analytics Dashboard</h2>
-              <p className="text-slate-400 mb-6">
-                Explore busiest airports, top airlines, popular routes, and more
-                with interactive visualizations
-              </p>
-              <button className="btn-primary" data-testid="view-analytics-btn">
-                View Analytics →
-              </button>
+      {/* Action Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 fade-in-up" style={{ animationDelay: '300ms' }}>
+        <Link to="/analytics" className="no-underline">
+          <GlassCard className="group cursor-pointer h-full" data-testid="analytics-card">
+            <div className="p-3 rounded-xl w-fit mb-4" style={{ background: 'rgba(59,130,246,0.12)' }}>
+              <TrendingUp className="w-8 h-8" style={{ color: '#60a5fa' }} />
             </div>
-          </Link>
+            <h2 className="text-xl font-bold mb-2" style={{ fontFamily: 'Space Grotesk' }}>
+              Analytics Dashboard
+            </h2>
+            <p className="text-sm mb-5" style={{ color: 'var(--av-text-muted)' }}>
+              Explore busiest airports, top airlines, popular routes, and more
+              with interactive visualizations
+            </p>
+            <span className="btn-primary inline-flex items-center gap-2 text-sm" data-testid="view-analytics-btn">
+              View Analytics
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </GlassCard>
+        </Link>
 
-          <Link to="/recommendations">
-            <div
-              className="glass rounded-3xl p-8 cursor-pointer"
-              data-testid="recommendations-card"
-            >
-              <Plane className="w-12 h-12 text-purple-400 mb-4" />
-              <h2 className="text-2xl font-bold mb-3">Route Recommendations</h2>
-              <p className="text-slate-400 mb-6">
-                Get AI-powered route suggestions using TF-IDF vector embeddings
-                and cosine similarity
-              </p>
-              <button
-                className="btn-primary"
-                data-testid="find-routes-btn"
-              >
-                Find Routes →
-              </button>
+        <Link to="/recommendations" className="no-underline">
+          <GlassCard className="group cursor-pointer h-full" data-testid="recommendations-card">
+            <div className="p-3 rounded-xl w-fit mb-4" style={{ background: 'rgba(139,92,246,0.12)' }}>
+              <Plane className="w-8 h-8" style={{ color: '#a78bfa' }} />
             </div>
-          </Link>
-        </div>
+            <h2 className="text-xl font-bold mb-2" style={{ fontFamily: 'Space Grotesk' }}>
+              Route Recommendations
+            </h2>
+            <p className="text-sm mb-5" style={{ color: 'var(--av-text-muted)' }}>
+              Get AI-powered route suggestions using TF-IDF vector embeddings
+              and cosine similarity
+            </p>
+            <span className="btn-primary inline-flex items-center gap-2 text-sm" data-testid="find-routes-btn">
+              Find Routes
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </GlassCard>
+        </Link>
+      </div>
 
-        {/* Tech Info */}
-        <div className="mt-16 glass rounded-2xl p-8 fade-in">
-          <h3 className="text-2xl font-bold mb-6 text-center">Technology Stack</h3>
+      {/* Tech Info */}
+      <div className="mt-10 fade-in-up" style={{ animationDelay: '500ms' }}>
+        <GlassCard>
+          <h3 className="text-lg font-semibold mb-6 text-center gradient-text" style={{ fontFamily: 'Space Grotesk' }}>
+            Technology Stack
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-blue-400 font-semibold mb-2">Database</div>
-              <p className="text-sm text-slate-400">
+              <div className="text-sm font-semibold mb-2" style={{ color: '#60a5fa' }}>Database</div>
+              <p className="text-xs" style={{ color: 'var(--av-text-muted)' }}>
                 MongoDB with vector embeddings for similarity search
               </p>
             </div>
             <div className="text-center">
-              <div className="text-purple-400 font-semibold mb-2">
-                Machine Learning
-              </div>
-              <p className="text-sm text-slate-400">
+              <div className="text-sm font-semibold mb-2" style={{ color: '#a78bfa' }}>Machine Learning</div>
+              <p className="text-xs" style={{ color: 'var(--av-text-muted)' }}>
                 TF-IDF vectorization with cosine similarity ranking
               </p>
             </div>
             <div className="text-center">
-              <div className="text-pink-400 font-semibold mb-2">Data Source</div>
-              <p className="text-sm text-slate-400">
+              <div className="text-sm font-semibold mb-2" style={{ color: '#fb7185' }}>Data Source</div>
+              <p className="text-xs" style={{ color: 'var(--av-text-muted)' }}>
                 OpenFlights dataset: 7,698 airports, 67,240 routes
               </p>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const StatCard = ({ icon, title, value, color, testId }) => {
-  const colorClasses = {
-    blue: 'from-blue-500/20 to-blue-600/20 border-blue-500/30 text-blue-400',
-    purple:
-      'from-purple-500/20 to-purple-600/20 border-purple-500/30 text-purple-400',
-    pink: 'from-pink-500/20 to-pink-600/20 border-pink-500/30 text-pink-400',
-    cyan: 'from-cyan-500/20 to-cyan-600/20 border-cyan-500/30 text-cyan-400',
-  };
-
-  return (
-    <div
-      className={`stat-card glass rounded-2xl p-6 bg-gradient-to-br ${colorClasses[color]} border`}
-      data-testid={testId}
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 rounded-xl bg-${color}-500/20`}>{icon}</div>
-      </div>
-      <div className="space-y-1">
-        <p className="text-sm text-slate-400">{title}</p>
-        <p
-          className={`text-3xl font-bold ${colorClasses[color].split(' ')[2]}`}
-        >
-          {value}
-        </p>
+        </GlassCard>
       </div>
     </div>
   );
