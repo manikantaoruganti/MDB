@@ -1,7 +1,6 @@
 """Analytics service — business logic for analytics endpoints"""
 from app.database import get_database
 
-
 async def get_platform_stats():
     db = get_database()
     total_airports = await db.airports.count_documents({})
